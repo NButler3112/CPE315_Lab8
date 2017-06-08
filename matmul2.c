@@ -1,34 +1,44 @@
 /* memory management, code density, Cache emulation - statistics generation */
 /* Generated for CSC 315 Lab 5 */
-#define AMAX 10			/* Maximum (square) array size */
-#define CACHESIM 1		/* Set to 1 if simulating Cache */
-#define CACHESIZE 16    /* Set to cache size (16 or 256) */
-#define ASSOC 1         /* Set to associativity option (1, 2, or 4) */
-#define BOLEN 2         /* Set to log2(sizeof(int)) = 2*/
-#define INDEXLEN 6      /* Set to log2(CACHESIZE) = 6 or 10 */
-#define TAGLEN 56       /* Set to server size (64) - BOLEN - INDEXLEN = 56 or 52*/
+#define AMAX 10			            /* Maximum (square) array size */
+#define CACHESIM 1		            /* Set to 1 if simulating Cache */
+#define CACHESIZE 16                /* Set to cache size (16 or 256) */
+#define ASSOC 1                     /* Set to associativity option (1, 2, or 4) */
+#define BOLEN 2                     /* Set to log2(sizeof(int)) = 2 */
+#define INDEXLEN 6                  /* Set to log2(CACHESIZE) = 6 or 10 */
+#define TAGLEN 56                   /* Set to server size (64) - BOLEN - INDEXLEN = 56 or 52 */
+#define BOMASK 0x0000000000000003   /* Set to get the byte offset out of the address */
+#define INDEXMASK 0x00000000000000FC/* Set to get the index out of the address */
+#define TAGMASK 0xFFFFFFFFFFFFFF00  /* Set to get the tag out of the address */
 #include <stdio.h>
 #include <math.h>
+#include "matmul2.h"
 
 /* Statically define the arrays a, b, and mult, where mult will become the cross product of a and b, i.e., a x b.*/
 static int a[AMAX][AMAX], b[AMAX][AMAX], mult[AMAX][AMAX];
 static double hit = 0, miss = 0, read = 0, write = 0;
-/*static int cache[2][TAGLEN];*/
+static Cache array[CACHESIZE];
 
-/*This function gets called with each "read" reference to memory */
+/* This function gets called with each "read" reference to memory */
+/* They actually do nothing. WE ACTUALLY NEVER USE DATA FROM THE CACHE */
 void mem_read(int *mp)
 {
-   int i, j;
+   int found  = 0, i, j;
    read++;
-   for (i = 0; i < TAGLEN / ASSOC; i += ASSOC)
+   for (i = 0; i < TAGLEN / ASSOC; i += ASSOC & miss++)
    for (j = 0; j < ASSOC; j += 1)
    {
-
+      if (array[j].tag == tag)
+      {
+         hit++;
+         break;
+      }
    }
    /* printf("Memory read from location %p\n", mp);  */
 }
 
 /* This function gets called with each "write" reference to memory */
+/* They actually do nothing. WE ACTUALLY NEVER USE DATA FROM THE CACHE */
 void mem_write(int *mp)
 {
    write++;
@@ -58,10 +68,10 @@ void matmul(r1, c1, c2)
    	mp2 = &a[i][k];
 	   mp3 = &b[k][j];
       fprintf(stderr, "mp1: %p, mp2: %p, mp3: %p\n", (void *)mp1, (void *)mp2, (void *)mp3);
-	   /*mem_read(mp1);
+	   mem_read(mp1);
  	   mem_read(mp2);
 	   mem_read(mp3);
-	   mem_write(mp1);*/
+	   mem_write(mp1);
       #endif
 
       mult[i][j]+=a[i][k]*b[k][j];
