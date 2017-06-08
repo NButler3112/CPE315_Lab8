@@ -1,18 +1,16 @@
-TARGET   = a.out
-CC       = gcc
-CCFLAGS  = -std=c89 -pedantic -Wall -Werror
-LDFLAGS  = -lm
-SOURCES  = $(wildcard *.c)
-INCLUDES = $(wildcard *.h)
-OBJECTS  = $(SOURCES:.c=.o)
+CC = gcc
+CFLAGS = -Wall -std=c99 -pedantic -g
+MAIN = matmul2
+OBJS = matmul2.o
 
-all:$(TARGET)
+all : $(MAIN)
 
-$(TARGET):$(OBJECTS)
-	$(CC) -o $(TARGET) $(LDFLAGS) $(OBJECTS)
+$(MAIN) : $(OBJS)
+	$(CC) $(CFLAGS) -o $(MAIN) $(OBJS)
 
-$(OBJECTS):$(SOURCES) $(INCLUDES)
-	$(CC) -c $(CCFLAGS) $(SOURCES)
+matmul2.o : matmul2.c matmul2.h
+	$(CC) $(CFLAGS) -c matmul2.c
 
-clean:
-	rm -f $(TARGET) $(OBJECTS)
+clean :
+	rm $(MAIN) $(OBJS)
+
