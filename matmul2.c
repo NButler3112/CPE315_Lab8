@@ -6,8 +6,8 @@
 /* memory management, code density, Cache emulation - statistics generation */
 /* Generated for CSC 315 Lab 9 */
 #define AMAX 10 			            /* Maximum (square) array size */
-#define CACHESIZE 256                /* Set to cache size (16 or 256) */
-#define ASSOC 4                     /* Set to associativity option (1, 2, or 4) */
+#define CACHESIZE 2               /* Set to cache size (16 or 256) */
+#define ASSOC 1                     /* Set to associativity option (1, 2, or 4) */
 #define CACHESIM 1		            /* Set to 1 if simulating Cache */
 
 /* Statically define the arrays a, b, and mult, where mult will become the cross product of a and b, i.e., a x b.*/
@@ -62,7 +62,6 @@ void mem_read(int *mp) {
    if (found == 0) {
       array[random][index].tag = tag;
       write += 1;
-   } else {
       miss += 1;
    }
 }
@@ -160,7 +159,9 @@ int main(int argc, char **argv)
       }
    }
 
+   printf("Read = %d, Write = %d\n", read, write);
    printf("Read/Write Ratio: %f\n", (double) read / (double) write);
+   printf("Hits = %d, Misses = %d\n", hit, miss);
    printf("Hit Rate: %f\n", (double) (hit * 100) / (double) (hit + miss));
    
    return 0;
